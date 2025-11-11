@@ -19,7 +19,7 @@ pip install sphinx-timetravel
 Or clone and install from source:
 
 ```bash
-git clone https://github.com/yourusername/sphinx-timetravel.git
+git clone https://github.com/robbinespu/sphinx-timetravel.git
 cd sphinx-timetravel
 pip install -e .
 ```
@@ -130,7 +130,7 @@ See the `docs/` directory for complete working examples.
 ### Setup Development Environment
 
 ```bash
-git clone https://github.com/yourusername/sphinx-timetravel.git
+git clone https://github.com/robbinespu/sphinx-timetravel.git
 cd sphinx-timetravel
 pip install -e ".[dev]"
 ```
