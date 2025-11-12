@@ -7,15 +7,14 @@ Welcome to the TimeTravel plugin documentation. This guide demonstrates how to u
    :maxdepth: 2
 
    vertical_timeline
-   horizontal_timeline
    advanced_examples
 
 
 Introduction
 ------------
 
-The TimeTravel plugin allows you to create beautiful, interactive timelines in your Sphinx documentation.
-Timelines can display events with year/month resolution and support multiple layout options.
+The TimeTravel plugin allows you to create beautiful, interactive vertical chronological timelines in your Sphinx documentation.
+Timelines display events with year/month resolution in a classic alternating left/right layout.
 
 Quick Start
 -----------

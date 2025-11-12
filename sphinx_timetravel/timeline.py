@@ -1,13 +1,11 @@
 """
-Timeline directive for Sphinx
-Supports events with year/month resolution
+Vertical chronological timeline directive for Sphinx.
+Supports events with year/month resolution.
 """
 
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
-from docutils.parsers.rst.states import Body
-import datetime
-from typing import List, Dict, Any
+from typing import List, Dict
 
 
 class TimelineEventNode(nodes.General, nodes.Element):
@@ -27,13 +25,12 @@ def depart_timeline_node(self, node):
 
 class TimelineDirective(Directive):
     """
-    Sphinx directive for creating timelines.
+    Sphinx directive for creating vertical chronological timelines.
 
     Usage:
         .. timeline::
-           :start-year: 2020
-           :end-year: 2024
-           :layout: vertical
+           :height: 600px
+           :width: 100%
 
            2020-01 Project Start
            ~~~
@@ -53,27 +50,21 @@ class TimelineDirective(Directive):
     optional_arguments = 0
     final_argument_whitespace = False
     option_spec = {
-        'start-year': directives.positive_int,
-        'end-year': directives.positive_int,
-        'layout': directives.unchanged,  # 'vertical' or 'horizontal'
-        'height': directives.unchanged,  # e.g. '400px'
+        'height': directives.unchanged,  # e.g. '600px'
         'width': directives.unchanged,   # e.g. '100%'
     }
 
     def run(self):
         """Process the timeline directive."""
         # Parse options
-        start_year = int(self.options.get('start-year', 2020))
-        end_year = int(self.options.get('end-year', datetime.datetime.now().year))
-        layout = self.options.get('layout', 'vertical')
         height = self.options.get('height', '600px')
         width = self.options.get('width', '100%')
 
         # Parse events from content
         events = self._parse_events()
 
-        # Generate HTML
-        html = self._generate_html(events, layout, start_year, end_year, height, width)
+        # Generate HTML for vertical timeline
+        html = self._generate_vertical_timeline(events, height, width)
 
         # Create and return the node
         node = TimelineEventNode()
@@ -157,109 +148,67 @@ class TimelineDirective(Directive):
         except ValueError:
             return False
 
-    def _generate_html(self, events: List[Dict[str, str]], layout: str,
-                      start_year: int, end_year: int,
-                      height: str, width: str) -> str:
-        """Generate HTML for the timeline."""
-
-        if layout == 'horizontal':
-            return self._generate_horizontal_timeline(events, start_year, end_year, height, width)
-        else:
-            return self._generate_vertical_timeline(events, height, width)
-
     def _generate_vertical_timeline(self, events: List[Dict[str, str]],
                                    height: str, width: str) -> str:
         """Generate a vertical timeline HTML."""
-
+        
+        # Icons/emojis for different event types
+        icons = ['📅', '🚀', '💾', '🎯', '📊', '🔧', '✨', '🌟', '💡', '🎉']
+        
         html_parts = [
-            '<div class="sphinx-timeline sphinx-timeline-vertical" style="height: {}; width: {};">'.format(height, width),
-            '<div class="timeline-container">',
+            '<div class="sphinx-timeline">',
         ]
 
-        for event in events:
-            html_parts.append(
-                f'<div class="timeline-event">'
-                f'<div class="timeline-date">{event["date"]}</div>'
-                f'<div class="timeline-marker"></div>'
-                f'<div class="timeline-content">'
-                f'<h4 class="timeline-title">{event["title"]}</h4>'
-                f'<p class="timeline-description">{event["description"]}</p>'
-                f'</div>'
-                f'</div>'
-            )
+        for i, event in enumerate(events):
+            icon = icons[i % len(icons)]
+            event_type = (i % 3) + 1  # Cycle through 3 color schemes
+            side = 'left' if i % 2 == 0 else 'right'  # Alternate between left and right
+            
+            # For left events: content → date → icon (icon is absolutely positioned)
+            # For right events: icon → date → content (icon is absolutely positioned)
+            if side == 'left':
+                html_parts.append(
+                    f'<div class="timeline__event animated fadeInUp timeline__event--type{event_type} timeline__event--{side}">'
+                    f'<div class="timeline__event__icon">'
+                    f'{icon}'
+                    f'</div>'
+                    f'<div class="timeline__event__content">'
+                    f'<div class="timeline__event__title">'
+                    f'{event["title"]}'
+                    f'</div>'
+                    f'<div class="timeline__event__description">'
+                    f'<p>{event["description"]}</p>'
+                    f'</div>'
+                    f'</div>'
+                    f'<div class="timeline__event__date-block">'
+                    f'<div class="timeline__event__date">'
+                    f'{event["date"]}'
+                    f'</div>'
+                    f'</div>'
+                    f'</div>'
+                )
+            else:  # right
+                html_parts.append(
+                    f'<div class="timeline__event animated fadeInUp timeline__event--type{event_type} timeline__event--{side}">'
+                    f'<div class="timeline__event__icon">'
+                    f'{icon}'
+                    f'</div>'
+                    f'<div class="timeline__event__date-block">'
+                    f'<div class="timeline__event__date">'
+                    f'{event["date"]}'
+                    f'</div>'
+                    f'</div>'
+                    f'<div class="timeline__event__content">'
+                    f'<div class="timeline__event__title">'
+                    f'{event["title"]}'
+                    f'</div>'
+                    f'<div class="timeline__event__description">'
+                    f'<p>{event["description"]}</p>'
+                    f'</div>'
+                    f'</div>'
+                    f'</div>'
+                )
 
-        html_parts.extend([
-            '</div>',
-            '</div>',
-        ])
-
-        return '\n'.join(html_parts)
-
-    def _generate_horizontal_timeline(self, events: List[Dict[str, str]],
-                                     start_year: int, end_year: int,
-                                     height: str, width: str) -> str:
-        """Generate a horizontal timeline HTML."""
-
-        # Sort events by date
-        sorted_events = sorted(events, key=lambda e: (e['year'], e['month']))
-
-        html_parts = [
-            '<div class="sphinx-timeline sphinx-timeline-horizontal" style="height: {}; width: {};">'.format(height, width),
-            '<svg class="timeline-svg" viewBox="0 0 1000 150" preserveAspectRatio="xMidYMid meet">',
-            '<!-- Timeline axis -->',
-            '<line x1="50" y1="75" x2="950" y2="75" stroke="#ccc" stroke-width="2"/>',
-        ]
-
-        # Calculate positions for years
-        num_years = end_year - start_year + 1
-        year_width = 900 / max(num_years - 1, 1)
-
-        # Add year markers
-        for i, year in enumerate(range(start_year, end_year + 1)):
-            x = 50 + (i * year_width)
-            html_parts.append(
-                f'<line x1="{x}" y1="70" x2="{x}" y2="80" stroke="#999" stroke-width="1"/>'
-            )
-            html_parts.append(
-                f'<text x="{x}" y="95" text-anchor="middle" font-size="12">{year}</text>'
-            )
-
-        # Add events
-        for event in sorted_events:
-            year = int(event['year'])
-            month = int(event['month'])
-
-            year_index = year - start_year
-            month_offset = (month - 1) / 12.0  # Position within the year
-
-            x = 50 + year_index * year_width + (month_offset * year_width)
-
-            html_parts.append(
-                f'<circle cx="{x}" cy="75" r="5" fill="#0066cc" '
-                f'class="timeline-event-marker" title="{event["date"]}: {event["title"]}"/>'
-            )
-            html_parts.append(
-                f'<text x="{x}" y="30" text-anchor="middle" font-size="11" '
-                f'class="timeline-event-label">{event["title"]}</text>'
-            )
-
-        html_parts.extend([
-            '</svg>',
-            '<div class="timeline-events-legend">',
-        ])
-
-        for event in sorted_events:
-            html_parts.append(
-                f'<div class="timeline-legend-item">'
-                f'<span class="timeline-legend-date">{event["date"]}</span>'
-                f'<strong>{event["title"]}</strong>'
-                f'<p>{event["description"]}</p>'
-                f'</div>'
-            )
-
-        html_parts.extend([
-            '</div>',
-            '</div>',
-        ])
+        html_parts.append('</div>')
 
         return '\n'.join(html_parts)

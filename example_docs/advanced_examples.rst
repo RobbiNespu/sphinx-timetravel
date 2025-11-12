@@ -28,13 +28,10 @@ Vertical Timeline - Detailed View
    Raised initial funding round.
    Expanded development team.
 
-Horizontal Timeline - Big Picture View
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Secondary Vertical Timeline - Alternative View
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. timeline::
-   :layout: horizontal
-   :start-year: 2020
-   :end-year: 2024
    :height: 300px
 
    2020 Concept
@@ -135,9 +132,6 @@ Research Timeline
 Track research progress and discoveries:
 
 .. timeline::
-   :layout: horizontal
-   :start-year: 2020
-   :end-year: 2024
 
    2020 Problem Definition
    ~~~
@@ -265,14 +259,11 @@ Show a structured learning progression:
 
 
 Company Growth Metrics
----------------------
+----------------------
 
 Visualize company growth over time:
 
 .. timeline::
-   :layout: horizontal
-   :start-year: 2015
-   :end-year: 2024
 
    2015 Startup Phase
    ~~~
@@ -302,11 +293,9 @@ Tips for creating effective timelines:
 
 1. **Keep events concise**: Use brief titles with descriptions in separate lines
 2. **Consistent dating**: Use ISO format (YYYY-MM-MM) for clarity
-3. **Appropriate layout**: Use vertical for detailed history, horizontal for big-picture views
+3. **Clear presentation**: Use vertical timelines for chronological progression
 4. **Balance content**: Mix short and long descriptions for visual variety
-5. **Relevant timeframes**: Choose start/end years that encompass your events
-6. **Group related events**: Consider breaking very long timelines into multiple sections
-7. **Use meaningful dates**: Avoid events too close together on horizontal timelines
+
 
 
 Common Patterns
